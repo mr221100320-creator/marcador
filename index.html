@@ -2,13 +2,52 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>WebAR con AR.js y A-Frame - Laptop AR</title>
+    <title>WebAR con Menú de Selección</title>
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
     <style>
         body { margin: 0; overflow: hidden; font-family: sans-serif; background-color: #f7fafc; }
+
+        /* Estilos del Menú Principal */
+        #menu-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2c3e50; /* Fondo oscuro */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* Asegura que esté por encima de todo */
+            text-align: center;
+        }
+
+        .menu-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Oculta la escena AR por defecto */
+        #ar-scene {
+            display: none; 
+        }
+
         .info-panel {
             position: fixed;
             bottom: 0;
@@ -26,20 +65,30 @@
 
 <body>
     
-    <a-scene 
-        embedded 
-       arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;">
+    <div id="menu-container">
+        <h2>Selecciona un Dispositivo</h2>
+        
+        <button class="menu-button" onclick="loadModel('https://github.com/mr221100320-creator/marcador/blob/main/componentes/01_laptop.glb')">💻 Laptop</button>
+        <button class="menu-button" onclick="loadModel('https://github.com/mr221100320-creator/marcador/blob/main/componentes/01_mouse.glb')">🖱️ Mouse</button>
+        <button class="menu-button" onclick="loadModel('https://github.com/mr221100320-creator/marcador/blob/main/componentes/01_teclado.glb')">⌨️ Teclado</button>
+    </div>
 
-    <a-entity light="type: ambient; color: #BBB; intensity: 0.8"></a-entity>
-    
-    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+    <a-scene 
+        id="ar-scene"
+        embedded 
+        arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;">
+
+        <a-entity light="type: ambient; color: #BBB; intensity: 0.8"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+        
         <a-marker preset="hiro">
             
             <a-entity
-    gltf-model="url(https://github.com/mr221100320-creator/marcador/blob/main/componentes/01_laptop.glb)" position="0 0 0"
-    rotation="-90 0 0"
-    scale="0.01 0.01 0.01">
-</a-entity>
+                id="model-entity"
+                position="0 0 0" 
+                rotation="-90 0 0"
+                scale="0.05 0.05 0.05">
+            </a-entity>
             
         </a-marker>
 
@@ -47,10 +96,34 @@
     </a-scene>
 
     <div class="info-panel">
-        <p>Apunta la cámara al **marcador 'Hiro'** para ver el modelo 3D de tu laptop.</p>
-        <p>Si el modelo es invisible, la **escala** (0.01) es muy pequeña o el modelo está mal girado.</p>
+        <p>Apunta la cámara al **marcador 'Hiro'** para ver el modelo 3D seleccionado.</p>
     </div>
 
+    <script>
+        function loadModel(fileName) {
+            const modelEntity = document.getElementById('model-entity');
+            const menuContainer = document.getElementById('menu-container');
+            const arScene = document.getElementById('ar-scene');
+
+            // 1. Ocultar el menú
+            menuContainer.style.display = 'none';
+            
+            // 2. Mostrar la escena AR
+            arScene.style.display = 'block';
+
+            // 3. Establecer el modelo GLTF y la ruta
+            const modelPath = `./componentes/${fileName}`;
+            
+            // **IMPORTANTE:** Remover el componente gltf-model anterior e inyectar el nuevo
+            // Esto asegura que A-Frame recargue el modelo correctamente.
+            modelEntity.removeAttribute('gltf-model');
+            modelEntity.setAttribute('gltf-model', `url(${modelPath})`);
+
+            // Opcional: Iniciar la cámara de AR.js si no lo hizo automáticamente
+            if (arScene.components.arjs) {
+                arScene.components.arjs.checkIfCameraExists();
+            }
+        }
+    </script>
 </body>
 </html>
-
