@@ -28,19 +28,18 @@
     
     <a-scene 
         embedded 
-        arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;">
+       arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;">
 
+    <a-entity light="type: ambient; color: #BBB; intensity: 0.8"></a-entity>
+    
+    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
         <a-marker preset="hiro">
             
             <a-entity
-                
-                
-                
-                obj-model="obj: url(./componentes/01_laptop.glb)"
-                position="0 0 0"
-                rotation="-90 0 0"
-                scale="0.5 0.5 0.5">
-            </a-entity>
+    gltf-model="url(./componentes/01_laptop.glb)" position="0 0 0"
+    rotation="-90 0 0"
+    scale="0.01 0.01 0.01">
+</a-entity>
             
         </a-marker>
 
@@ -54,4 +53,3 @@
 
 </body>
 </html>
-
